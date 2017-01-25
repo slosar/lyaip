@@ -5,8 +5,11 @@ from astropy.io import fits
 from astropy import wcs
 from scipy.interpolate import interp1d
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from numpy.fft import rfft2, irfft2
+
 
 band="g"
 debug=True
