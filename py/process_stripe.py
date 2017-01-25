@@ -114,8 +114,8 @@ def save_results(header,tra,tdec,tsky, root):
         plot_strip(tsky,root+'sky.png')
         plot_strip(tra,root+'ra.png')
         plot_strip(tdec,root+'dec.png')
-    # now filter
-    tskyf=filterAvg(tsky)
+    # now filter ### not actually filtering here
+    #tskyf=filterAvg(tsky)
     print "done"
     if debug:
         plot_strip(tskyf,root+'skyf.png')
