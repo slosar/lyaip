@@ -22,13 +22,14 @@ def main():
     print "Band:",band
     print "maxfiles:",maxfiles
     flist, header, run, col = get_list(sys.argv[1])
+    outroot="output/out-%s-%04d-%i-%s"%(band,run,col,header['FLAVOR']) #want to make sure we filter non-science guys out
     print "FLAVOR:", header['FLAVOR']
     print "EXP TIME:",header['EXPTIME']
     print "STRIPE:", header['STRIPE']
     print "STRIP:", header['STRIP']
     print "Working on run %i, col %i, with %i files."%(run,col,len(flist))
     ra,dec,sky=process_list(flist)
-    save_results(ra,dec,sky,"out-%s-%04d-%i-"%(band,run,col))
+    save_results(header,ra,dec,sky,)
     print "DONE"
     print "------------------------"
         
@@ -108,7 +109,7 @@ def process_list(flist):
     return tra,tdec, tsky
 
 
-def save_results(tra,tdec,tsky, root):
+def save_results(header,tra,tdec,tsky, root):
     if debug:
         plot_strip(tsky,root+'sky.png')
         plot_strip(tra,root+'ra.png')
@@ -118,7 +119,7 @@ def save_results(tra,tdec,tsky, root):
     print "done"
     if debug:
         plot_strip(tskyf,root+'skyf.png')
-    np.savez(root+"data",(tsky,tra,tdec))
+    np.savez(root+"data",(header,tsky,tra,tdec))
     
 
     
