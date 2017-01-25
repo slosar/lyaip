@@ -12,7 +12,7 @@ from numpy.fft import rfft2, irfft2
 
 
 band="g"
-debug=True
+debug=False
 maxfiles=200000000000
 
 def main():
