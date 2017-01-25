@@ -13,7 +13,7 @@ from numpy.fft import rfft2, irfft2
 
 band="g"
 debug=True
-maxfiles=200000
+maxfiles=200000000000
 
 def main():
     print "------------------------"
@@ -22,14 +22,14 @@ def main():
     print "Band:",band
     print "maxfiles:",maxfiles
     flist, header, run, col = get_list(sys.argv[1])
-    outroot="output/out-%s-%04d-%i-%s"%(band,run,col,header['FLAVOR']) #want to make sure we filter non-science guys out
+    outroot="output/out-%s-%04d-%i-%s-"%(band,run,col,header['FLAVOR']) #want to make sure we filter non-science guys out
     print "FLAVOR:", header['FLAVOR']
     print "EXP TIME:",header['EXPTIME']
     print "STRIPE:", header['STRIPE']
     print "STRIP:", header['STRIP']
     print "Working on run %i, col %i, with %i files."%(run,col,len(flist))
     ra,dec,sky=process_list(flist)
-    save_results(header,ra,dec,sky,)
+    save_results(header,ra,dec,sky,outroot)
     print "DONE"
     print "------------------------"
         
