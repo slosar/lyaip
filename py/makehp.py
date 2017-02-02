@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import sys
+from glob import glob
 import numpy as np
 import healpy as hp
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-Nside=128
+Nside=2048
 Npix=12*Nside**2
 
 def filterAvg(s):
@@ -20,14 +21,18 @@ def filterAvg(s):
         
 
 def main():
-    flist=sys.argv[1:]
+    flist=glob(sys.argv[1])
+    try:
+        flist=flist[:int(sys.argv[2])]
+    except:
+        pass
 
     gmap=np.zeros(Npix)
     wmap=np.zeros(Npix)
     vmap=np.zeros(Npix)
-
-    for fname in flist:
-        print "Processing ",fname
+    print flist
+    for i,fname in enumerate(flist):
+        print "Processing ",fname, i+1,"/",len(flist)
         header,sky,ra,dec=np.load(fname)['arr_0']
         sky=filterAvg(sky)
         sky=sky.flatten()
@@ -40,15 +45,16 @@ def main():
         gmap+=np.bincount(ipix,weights=sky,minlength=Npix)
         vmap[ipix]+=1
     gmap/=wmap
-    plt.figure(figsize=(12,8))
-    hp.mollview(wmap)
-    plt.savefig('weights.png')
-    plt.figure(figsize=(12,8))
-    hp.mollview(vmap)
-    plt.savefig('visits.png')
-    plt.figure(figsize=(12,8))
-    hp.mollview(gmap)
-    plt.savefig('map.png')
+    np.savez("map",(gmap, wmap, vmap))
+    # plt.figure(figsize=(12,8))
+    # hp.mollview(wmap)
+    # plt.savefig('weights.png')
+    # plt.figure(figsize=(12,8))
+    # hp.mollview(vmap)
+    # plt.savefig('visits.png')
+    # plt.figure(figsize=(12,8))
+    # hp.mollview(gmap)
+    # plt.savefig('map.png')
 
 
         

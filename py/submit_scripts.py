@@ -2,13 +2,18 @@
 from glob import glob
 import os, sys
 
-tosubmit=50
+tosubmit=150
 lst=glob('sh/*.sh')
 for cname in lst:
     if 'test' in cname:
         continue
     name=cname.replace('sh/','')
     name=name.replace('.sh','')
+    try:
+        num=int(name)
+    except:
+        print "Not a number, name"
+        continue
     done=os.path.isfile('log/%s_1.log'%name)
     if not done:
         print "submitting ", name
