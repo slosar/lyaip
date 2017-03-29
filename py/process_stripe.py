@@ -80,14 +80,21 @@ def process_list(flist):
         ### GET DATA
         if (d[0].data.shape!=(1489, 2048)):
             print "Unexpected shape:", d[0].data.shape
+        calibvec=d[1].data    
+
         sky=d[2].data['ALLSKY'][0,:,:]
         ## need to take the non-repeated bit
         NX=int(sky.shape[0]*1361/1489.)
         NY=sky.shape[1]
+        # calib vec should be 8x averaged to match the NY of 256
+        assert(NY*8==len(calibvec))
+        acalib=np.array([calibvec[i*8:(i+1)*8].mean() for i in range(NY)])
+        for i in range(NY):
+               sky[:,i]*=acalib[i] ## sky is now in nannomaggies
+
         tsky.append(sky[:NX,:])
         # now get ra/dec coordinates
         ### Get coordinates
-        #print d[2].data['XINTERP'].max(), d[2].data['YINTERP'].max()
         xo,xk=getLinCoef(d[2].data['XINTERP'][0],2048)
         yo,yk=getLinCoef(d[2].data['YINTERP'][0],1489)
         yint=interp1d(d[2].data['YINTERP'][0],np.arange(1489))
@@ -114,32 +121,11 @@ def save_results(header,tra,tdec,tsky, root):
         plot_strip(tsky,root+'sky.png')
         plot_strip(tra,root+'ra.png')
         plot_strip(tdec,root+'dec.png')
-    # now filter ### not actually filtering here
-    #tskyf=filterAvg(tsky)
     print "done"
     if debug:
         plot_strip(tskyf,root+'skyf.png')
     np.savez(root+"data",(header,tsky,tra,tdec))
     
-
-    
-def filterFourier(s):
-    Nx,Ny=s.shape
-    fs=rfft2(s)
-    fs[:,0]=0
-    fs[0,:]=0
-    return irfft2(fs)
-
-def filterAvg(s):
-    sr=s*1.0
-    Nx,Ny=s.shape
-    for i in range(Nx):
-        sr[i,:]-=sr[i,:].mean()
-    for j in range(Ny):
-        sr[:,j]-=sr[:,j].mean()
-    return sr
-        
-
 
 def plot_strip(d,fname):
     plt.figure(figsize=(16,4))
