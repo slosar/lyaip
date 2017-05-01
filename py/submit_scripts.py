@@ -2,7 +2,7 @@
 from glob import glob
 import os, sys
 
-tosubmit=150
+tosubmit=500
 lst=glob('sh/*.sh')
 for cname in lst:
     if 'test' in cname:

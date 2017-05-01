@@ -7,8 +7,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-Nside=256
+Nside=2048
 Npix=12*Nside**2
+whitenoise=True
+
 
 def filterAvg(sky):
     tsky=np.hstack(sky).mean(axis=1)
@@ -25,7 +27,6 @@ def filterAvg(sky):
 
     return fsky, fwe
         
-
 def main():
     flist=glob(sys.argv[1])
     try:
@@ -36,17 +37,23 @@ def main():
     gmap=np.zeros(Npix)
     wmap=np.zeros(Npix)
     vmap=np.zeros(Npix)
-    print flist
+    nfail=0
     for i,fname in enumerate(flist):
-        print "Processing ",fname, i+1,"/",len(flist)
+        print "Processing ",fname, i+1,"/",len(flist), "nfail=",nfail
         if "-1-" not in fname:
             continue
         headerl,skyl,ral,decl=[],[],[],[]
         for i in range(6):
-            print i,
-            cf=fname.replace('-1-','-%i-'%(i+1))
-            cheader,csky,cra,cdec=np.load(cf)['arr_0']
+            try:
+                print i,
+                cf=fname.replace('-1-','-%i-'%(i+1))
+                cheader,csky,cra,cdec=np.load(cf)['arr_0']
+            except:
+                nfail+=1
+                continue
             headerl.append(cheader)
+            if whitenoise:
+                csky=np.random.uniform(0.0,1.0,csky.shape)
             skyl.append(csky)
             ral.append(cra)
             decl.append(cdec)
@@ -67,7 +74,11 @@ def main():
     assert(len(np.where(wmap<0)[0])==0)
     mx=np.where(wmap>0)
     gmap[mx]/=wmap[mx]
-    np.savez("map",(gmap, wmap, vmap))
+    if whitenoise:
+        fname="mapwhite"
+    else:
+        fname="map"
+    np.savez(fname,(gmap, wmap, vmap))
     # plt.figure(figsize=(12,8))
     # hp.mollview(wmap)
     # plt.savefig('weights.png')
