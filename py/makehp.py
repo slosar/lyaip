@@ -69,6 +69,7 @@ def main():
             ipix=hp.ang2pix(Nside,theta,phi)
             wmap+=np.bincount(ipix,weights=wei,minlength=Npix)
             gmap+=np.bincount(ipix,weights=sky*wei,minlength=Npix)
+            print sky.mean(), sky.var(), sky.min(), sky.max(),"XX"
             vmap[ipix]+=1
     assert(np.all(gmap[np.where(wmap==0)]==0))
     assert(len(np.where(wmap<0)[0])==0)
