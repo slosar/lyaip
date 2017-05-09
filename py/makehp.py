@@ -14,6 +14,15 @@ whitenoise=True
 
 def filterAvg(sky):
     tsky=np.hstack(sky).mean(axis=1)
+
+    if False:
+        for i,s in enumerate(sky):
+            print s.shape
+            plt.subplot(6,1,i+1)
+            plt.imshow(s.T,aspect='auto')
+            plt.colorbar()
+        plt.show()
+        
     fsky, fwe=[],[]
     for s in sky:
         Nx,Ny=s.shape
@@ -24,6 +33,14 @@ def filterAvg(sky):
         for i in range(Ny):
             fs[:,i]-=fs[:,i].mean()
         fsky.append(fs)
+
+    if False:
+        for i,s in enumerate(fwe):
+            print s.shape
+            plt.subplot(6,1,i+1)
+            plt.imshow(s.T,aspect='auto')
+            plt.colorbar()
+        plt.show()
 
     return fsky, fwe
         
@@ -53,7 +70,7 @@ def main():
                 continue
             headerl.append(cheader)
             if whitenoise:
-                csky=np.random.uniform(0.0,1.0,csky.shape)
+                csky=np.random.uniform(80,100,csky.shape)
             skyl.append(csky)
             ral.append(cra)
             decl.append(cdec)
